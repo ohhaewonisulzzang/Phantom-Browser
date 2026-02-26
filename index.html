@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phantom Browser - 흔적 없는 로컬 프라이버시</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --bg-color: #0f0f12;
+            --card-bg: rgba(30, 30, 38, 0.8);
+            --text-color: #ffffff;
+        }
+
+        /* 텍스트 드래그 및 선택 방지 */
+        * {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* 배경 애니메이션 캔버스 */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f12 100%);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 10%;
+            align-items: center;
+            background: rgba(15, 15, 18, 0.6);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 80%;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        /* 노트북 & 해커 아이콘 컨테이너 */
+        .icon-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .laptop-icon {
+            font-size: 80px;
+            color: #fff;
+            filter: drop-shadow(0 0 20px var(--primary-color));
+        }
+
+        .hacker-overlay {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            fill: var(--primary-color);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            margin: 10px 0;
+            background: linear-gradient(to right, #fff, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 35px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 15px 45px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-5px);
+            background-color: var(--secondary-color);
+            box-shadow: 0 15px 40px rgba(108, 92, 231, 0.6);
+        }
+
+        .features {
+            padding: 80px 10%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            position: relative;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-10px);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <nav>
+        <a href="#" class="logo">PHANTOM</a>
+    </nav>
+
+    <section class="hero">
+        <div class="icon-container">
+            <i class="fas fa-laptop laptop-icon" id="target-node"></i>
+            <svg class="hacker-overlay" viewBox="0 0 24 24">
+                <path d="M12 2C10 2 8 3.5 7.5 5.5C7 7.5 6.5 10 6.5 12H17.5C17.5 10 17 7.5 16.5 5.5C16 3.5 14 2 12 2Z"/>
+            </svg>
+        </div>
+
+        <h1>Phantom Browser</h1>
+        <p>로컬 PC에 흔적을 남기지 않는 가볍고 강력한 브라우저</p>
+        
+        <a href="Phantom Browser Setup 1.0.0.exe" class="download-btn" download>
+            <i class="fas fa-download" style="margin-right: 10px;"></i> 무료 다운로드
+        </a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <i class="fas fa-history"></i>
+            <h3>방문 기록 제로</h3>
+            <p>브라우저를 끄는 순간, 모든 로컬 활동 기록이 즉시 삭제됩니다.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-layer-group"></i>
+            <h3>다양한 엔진</h3>
+            <p>다양한 웹 환경에 맞춰 최적화된 엔진으로 부드러운 웹서핑을 지원합니다.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-feather-alt"></i>
+            <h3>가벼운 리소스</h3>
+            <p>저사양 PC에서도 부담 없이 실행되는 압도적인 가벼움을 경험하세요.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; Phantom Browser Project. All rights reserved.
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 60;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                // 화면 바깥 사방에서 생성
+                const side = Math.floor(Math.random() * 4);
+                if(side === 0) { this.x = Math.random() * canvas.width; this.y = -20; }
+                else if(side === 1) { this.x = canvas.width + 20; this.y = Math.random() * canvas.height; }
+                else if(side === 2) { this.x = Math.random() * canvas.width; this.y = canvas.height + 20; }
+                else { this.x = -20; this.y = Math.random() * canvas.height; }
+
+                this.size = Math.random() * 3 + 1;
+                this.speed = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? '#6c5ce7' : '#a29bfe';
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                // 중앙(노트북 아이콘 위치)으로 이동
+                const targetX = canvas.width / 2;
+                const targetY = canvas.height / 2 - 50; // 노트북 위치 대략 조절
+
+                const dx = targetX - this.x;
+                const dy = targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 10) {
+                    this.init(); // 노트북에 닿으면 다시 바깥에서 생성
+                } else {
+                    this.x += (dx / distance) * this.speed;
+                    this.y += (dy / distance) * this.speed;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                
+                // 꼬리 효과 (Data streaming 느낌)
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
